@@ -1,38 +1,39 @@
 package me.vilsol.blockly2java;
 
-import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class Node {
 
     private final String name;
-    private final HashMap<String, String> attributes;
+    private final Map<String, String> attributes;
     private final String value;
-    private LinkedHashSet<Node> subnodes = new LinkedHashSet<>();
+    private final Set<Node> subnodes = new LinkedHashSet<>();
 
-    public Node(String name, HashMap<String, String> attributes, String value) {
+    protected Node(String name, Map<String, String> attributes, String value) {
         this.name = name;
         this.attributes = attributes;
         this.value = value;
     }
 
-    public String getName() {
+    protected String getName() {
         return name;
     }
 
-    public HashMap<String, String> getAttributes() {
+    protected Map<String, String> getAttributes() {
         return attributes;
     }
 
-    public String getValue() {
+    protected String getValue() {
         return value;
     }
 
-    public LinkedHashSet<Node> getSubnodes() {
+    protected Set<Node> getSubnodes() {
         return subnodes;
     }
 
-    public void addSubnode(Node node){
+    protected void addSubnode(Node node){
         subnodes.add(node);
     }
 

@@ -13,9 +13,15 @@ import java.util.regex.Pattern;
 
 public class Blockly2Java {
 
-    private static HashMap<String, BlocklyBlock> blocks = new HashMap<>();
-    private static Pattern nodePattern = Pattern.compile("(<.*?>)([\\w\\d\\s.]*)");
-    private static Pattern attributePattern = Pattern.compile("([a-zA-Z0-9]+)=\"(.+?)\"");
+    private static final Blockly2Java instance = new Blockly2Java();
+
+    private final Map<String, BlocklyBlock> blocks = new HashMap<>();
+    private final Pattern nodePattern = Pattern.compile("(<.*?>)([\\w\\d\\s.]*)");
+    private final Pattern attributePattern = Pattern.compile("([a-zA-Z0-9]+)=\"(.+?)\"");
+
+    protected static Blockly2Java getInstance() {
+        return instance;
+    }
 
     /**
      * Register a class to be used as an object for converting blockly to java object
@@ -28,9 +34,9 @@ public class Blockly2Java {
             throw new RuntimeException("Tried to register block (" + block.getName() + ") without @BBlock annotation");
         }
 
-        HashMap<String, Field> blockFields = new HashMap<>();
-        HashMap<String, Field> blockValues = new HashMap<>();
-        HashMap<String, Field> blockStatements = new HashMap<>();
+        Map<String, Field> blockFields = new HashMap<>();
+        Map<String, Field> blockValues = new HashMap<>();
+        Map<String, Field> blockStatements = new HashMap<>();
 
         Field[] fields = block.getDeclaredFields();
         for(Field field : fields){
@@ -50,7 +56,7 @@ public class Blockly2Java {
             }
         }
 
-        blocks.put(b.value(), new BlocklyBlock(block, b.value(), blockFields, blockValues, blockStatements));
+        getInstance().blocks.put(b.value(), new BlocklyBlock(block, b.value(), blockFields, blockValues, blockStatements));
     }
 
     /**
@@ -60,7 +66,7 @@ public class Blockly2Java {
      * @return The parent-most object of the structure
      */
     public static Object parseBlockly(String blockly){
-        Matcher m = nodePattern.matcher(blockly);
+        Matcher m = getInstance().nodePattern.matcher(blockly);
         Stack<Node> nodes = new Stack<>();
         Node lastNode = null;
         int ignoreBlocks = 0;
@@ -99,7 +105,7 @@ public class Blockly2Java {
     }
 
     private static Object parseBlock(Node node){
-        BlocklyBlock baseBlock = blocks.get(node.getAttributes().get("type"));
+        BlocklyBlock baseBlock = getInstance().blocks.get(node.getAttributes().get("type"));
         if(baseBlock == null){
             throw new RuntimeException("No block with type '" + node.getAttributes().get("type") + "' registered!");
         }
@@ -156,8 +162,8 @@ public class Blockly2Java {
 
     private static Node getNode(String node, String value){
         String name = node.split("\\s")[0].split(">")[0].substring(1);
-        Matcher m = attributePattern.matcher(node);
-        HashMap<String, String> attributes = new HashMap<>();
+        Matcher m = getInstance().attributePattern.matcher(node);
+        Map<String, String> attributes = new HashMap<>();
         while(m.find()){
             attributes.put(m.group(1), m.group(2));
         }
