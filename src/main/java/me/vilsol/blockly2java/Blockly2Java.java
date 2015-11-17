@@ -95,10 +95,10 @@ public class Blockly2Java {
         }
 
         assert lastNode != null;
-        return parseBock(lastNode);
+        return parseBlock(lastNode);
     }
 
-    private static Object parseBock(Node node){
+    private static Object parseBlock(Node node){
         BlocklyBlock baseBlock = blocks.get(node.getAttributes().get("type"));
         if(baseBlock == null){
             throw new RuntimeException("No block with type '" + node.getAttributes().get("type") + "' registered!");
@@ -131,13 +131,13 @@ public class Blockly2Java {
                     }
                     break;
                 case "value":
-                    setValue(base, block.getValues().get(s.getAttributes().get("name")), parseBock(s.getSubnodes().iterator().next()));
+                    setValue(base, block.getValues().get(s.getAttributes().get("name")), parseBlock(s.getSubnodes().iterator().next()));
                     break;
                 case "statement":
                     List<Object> objects = new ArrayList<>();
                     if(s.getSubnodes() != null && s.getSubnodes().size() > 0){
                         for(Node n : s.getSubnodes()){
-                            objects.add(parseBock(n));
+                            objects.add(parseBlock(n));
                         }
                     }
                     setValue(base, block.getStatements().get(s.getAttributes().get("name")), objects);
