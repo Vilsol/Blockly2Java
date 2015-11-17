@@ -1,0 +1,6 @@
+script: "mvn javadoc:jar source:jar test"
+language: java
+install: true
+matrix:
+  include:
+  - jdk: openjdk7
