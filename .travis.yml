@@ -4,3 +4,5 @@ install: true
 matrix:
   include:
   - jdk: openjdk7
+after_success:
+  - mvn cobertura:cobertura coveralls:report

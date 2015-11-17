@@ -70,6 +70,14 @@
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.eluder.coveralls</groupId>
+                <artifactId>coveralls-maven-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <repoToken>${env.COVERAGE_TOKEN}</repoToken>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
