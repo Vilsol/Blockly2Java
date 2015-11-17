@@ -8,7 +8,7 @@ You can use this library by adding it as a dependency to your pom.xml
     <dependency>
         <groupId>me.vilsol</groupId>
         <artifactId>blockly2java</artifactId>
-        <version>1.1</version>
+        <version>1.2</version>
         <scope>compile</scope>
     </dependency>
 </dependencies>
