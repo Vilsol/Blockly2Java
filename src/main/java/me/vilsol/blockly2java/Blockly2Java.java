@@ -17,6 +17,11 @@ public class Blockly2Java {
     private static Pattern nodePattern = Pattern.compile("(<.*?>)([\\w\\d\\s.]*)");
     private static Pattern attributePattern = Pattern.compile("([a-zA-Z0-9]+)=\"(.+?)\"");
 
+    /**
+     * Register a class to be used as an object for converting blockly to java object
+     *
+     * @param block The class of the object
+     */
     public static void registerClass(Class<?> block){
         BBlock b = block.getAnnotation(BBlock.class);
         if(b == null){
@@ -48,6 +53,12 @@ public class Blockly2Java {
         blocks.put(b.value(), new BlocklyBlock(block, b.value(), blockFields, blockValues, blockStatements));
     }
 
+    /**
+     * Parse blockly XML structure and convert into an object
+     *
+     * @param blockly Blockly XML structure
+     * @return The parent-most object of the structure
+     */
     public static Object parseBlockly(String blockly){
         Matcher m = nodePattern.matcher(blockly);
         Stack<Node> nodes = new Stack<>();
@@ -143,7 +154,7 @@ public class Blockly2Java {
         }
     }
 
-    public static Node getNode(String node, String value){
+    private static Node getNode(String node, String value){
         String name = node.split("\\s")[0].split(">")[0].substring(1);
         Matcher m = attributePattern.matcher(node);
         HashMap<String, String> attributes = new HashMap<>();
