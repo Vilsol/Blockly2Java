@@ -54,6 +54,10 @@ public class Blockly2Java {
                 }
                 blockStatements.put(((BStatement) f).value(), field);
             }
+
+            if(f != null){
+                field.setAccessible(true);
+            }
         }
 
         getInstance().blocks.put(b.value(), new BlocklyBlock(block, b.value(), blockFields, blockValues, blockStatements));
@@ -124,12 +128,19 @@ public class Blockly2Java {
             switch(s.getName()){
                 case "field":
                     Field field = block.getFields().get(s.getAttributes().get("name"));
+
+                    if(field == null){
+                        throw new RuntimeException("Field '" + s.getAttributes().get("name") + "' not found in " + base.getClass().getName());
+                    }
+
                     if(field.getType().equals(int.class) || field.getType().equals(Integer.class)){
                         setValue(base, field, Integer.parseInt(s.getValue()));
                     }else if(field.getType().equals(double.class) || field.getType().equals(Double.class)) {
                         setValue(base, field, Double.parseDouble(s.getValue()));
                     }else if(field.getType().equals(float.class) || field.getType().equals(Float.class)) {
                         setValue(base, field, Float.parseFloat(s.getValue()));
+                    }else if(field.getType().equals(long.class) || field.getType().equals(Long.class)) {
+                        setValue(base, field, Long.parseLong(s.getValue()));
                     }else if(field.getType().equals(boolean.class) || field.getType().equals(Boolean.class)) {
                         setValue(base, field, Boolean.parseBoolean(s.getValue()));
                     }else{
