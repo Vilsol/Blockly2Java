@@ -161,6 +161,10 @@ public class Blockly2Java {
                     break;
             }
         }
+
+        if(base instanceof BlocklyAfterParsed){
+            ((BlocklyAfterParsed) base).onFinish();
+        }
     }
 
     private static void setValue(Object object, Field field, Object value){
