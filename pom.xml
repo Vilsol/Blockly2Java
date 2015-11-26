@@ -6,7 +6,7 @@
 
     <groupId>me.vilsol</groupId>
     <artifactId>blockly2java</artifactId>
-    <version>1.3</version>
+    <version>1.4</version>
 
     <name>Blockly2Java</name>
     <description>A library for converting blockly xml format to java objects</description>

@@ -16,7 +16,7 @@ public class Blockly2Java {
     private static final Blockly2Java instance = new Blockly2Java();
 
     private final Map<String, BlocklyBlock> blocks = new HashMap<>();
-    private final Pattern nodePattern = Pattern.compile("(<.*?>)([\\w\\d\\s.]*)");
+    private final Pattern nodePattern = Pattern.compile("(<.*?>)([^<>]*)");
     private final Pattern attributePattern = Pattern.compile("([a-zA-Z0-9]+)=\"(.+?)\"");
 
     protected static Blockly2Java getInstance() {
