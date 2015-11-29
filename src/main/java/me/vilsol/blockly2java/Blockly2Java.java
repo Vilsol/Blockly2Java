@@ -77,6 +77,10 @@ public class Blockly2Java {
         while(m.find()){
             if(!m.group(1).startsWith("</")) {
                 Node node = getNode(m.group(1), m.group(2));
+                if(node.getName().equals("mutation")){
+                    continue;
+                }
+
                 if(node.getName().equals("next")){
                     nodes.pop();
                     lastNode = nodes.peek();
@@ -91,6 +95,10 @@ public class Blockly2Java {
                 nodes.add(node);
                 lastNode = node;
             }else{
+                if(m.group(1).equals("</mutation>")){
+                    continue;
+                }
+
                 if(nodes.size() > 0) {
                     if (nodes.peek().getName().equals("block") && ignoreBlocks > 0) {
                         ignoreBlocks--;
@@ -125,30 +133,34 @@ public class Blockly2Java {
         }
 
         for(Node s : node.getSubnodes()){
+            String fieldName = s.getAttributes().get("name");
+
             switch(s.getName()){
                 case "field":
-                    Field field = block.getFields().get(s.getAttributes().get("name"));
+                    Field field = block.getFields().get(fieldName);
 
                     if(field == null){
-                        throw new RuntimeException("Field '" + s.getAttributes().get("name") + "' not found in " + base.getClass().getName());
+                        throw new RuntimeException("Field '" + fieldName + "' not found in " + base.getClass().getName());
                     }
 
                     if(field.getType().equals(int.class) || field.getType().equals(Integer.class)){
-                        setValue(base, field, Integer.parseInt(s.getValue()));
+                        setValue(base, fieldName, field, Integer.parseInt(s.getValue()));
                     }else if(field.getType().equals(double.class) || field.getType().equals(Double.class)) {
-                        setValue(base, field, Double.parseDouble(s.getValue()));
+                        setValue(base, fieldName, field, Double.parseDouble(s.getValue()));
                     }else if(field.getType().equals(float.class) || field.getType().equals(Float.class)) {
-                        setValue(base, field, Float.parseFloat(s.getValue()));
+                        setValue(base, fieldName, field, Float.parseFloat(s.getValue()));
                     }else if(field.getType().equals(long.class) || field.getType().equals(Long.class)) {
-                        setValue(base, field, Long.parseLong(s.getValue()));
+                        setValue(base, fieldName, field, Long.parseLong(s.getValue()));
                     }else if(field.getType().equals(boolean.class) || field.getType().equals(Boolean.class)) {
-                        setValue(base, field, Boolean.parseBoolean(s.getValue()));
+                        setValue(base, fieldName, field, Boolean.parseBoolean(s.getValue()));
+                    }else if(field.getType().isEnum()) {
+                        setValue(base, fieldName, field, field.getType().getEnumConstants()[Integer.parseInt(s.getValue())]);
                     }else{
-                        setValue(base, field, s.getValue());
+                        setValue(base, fieldName, field, s.getValue());
                     }
                     break;
                 case "value":
-                    setValue(base, block.getValues().get(s.getAttributes().get("name")), parseBlock(s.getSubnodes().iterator().next()));
+                    setValue(base, fieldName, block.getValues().get(fieldName), parseBlock(s.getSubnodes().iterator().next()));
                     break;
                 case "statement":
                     List<Object> objects = new ArrayList<>();
@@ -157,7 +169,7 @@ public class Blockly2Java {
                             objects.add(parseBlock(n));
                         }
                     }
-                    setValue(base, block.getStatements().get(s.getAttributes().get("name")), objects);
+                    setValue(base, fieldName, block.getStatements().get(fieldName), objects);
                     break;
             }
         }
@@ -167,11 +179,15 @@ public class Blockly2Java {
         }
     }
 
-    private static void setValue(Object object, Field field, Object value){
+    private static void setValue(Object object, String fieldName, Field field, Object value){
         try {
             field.set(object, value);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            if(field == null){
+                throw new RuntimeException("Object '" + object.getClass().getName() + "' does not contain field '" + fieldName + "'");
+            }else{
+                throw new RuntimeException("Exception '" + e.getMessage() + "' whilst trying to set '" + fieldName + "' in object " + object.getClass().getName());
+            }
         }
     }
 
