@@ -45,7 +45,7 @@ public class Blockly2Java {
                 blockFields.put(((BField) f).value(), field);
             }else if((f = field.getAnnotation(BValue.class)) != null){
                 if(field.getDeclaringClass().getAnnotation(BBlock.class) == null){
-                    throw new RuntimeException("Class:" + block.getName() + " Field:" + field.getName() + " Should be a @BBlock class!");
+                    throw new RuntimeException("Class:" + block.getName() + " Should be a @BBlock class!");
                 }
                 blockValues.put(((BValue) f).value(), field);
             }else if((f = field.getAnnotation(BStatement.class)) != null){
@@ -69,9 +69,11 @@ public class Blockly2Java {
      * @param blockly Blockly XML structure
      * @return The parent-most object of the structure
      */
-    public static Object parseBlockly(String blockly){
+    public static ArrayList<Object> parseBlockly(String blockly){
         Matcher m = getInstance().nodePattern.matcher(blockly);
         Stack<Node> nodes = new Stack<>();
+        ArrayList<Object> blocks = new ArrayList<>();
+
         Node lastNode = null;
         int ignoreBlocks = 0;
         while(m.find()){
@@ -109,11 +111,16 @@ public class Blockly2Java {
                         }
                     }
                 }
+
+                if(nodes.size() == 0){
+                    if(m.group(1).equals("</block>")) {
+                        blocks.add(parseBlock(lastNode));
+                    }
+                }
             }
         }
 
-        assert lastNode != null;
-        return parseBlock(lastNode);
+        return blocks;
     }
 
     private static Object parseBlock(Node node){

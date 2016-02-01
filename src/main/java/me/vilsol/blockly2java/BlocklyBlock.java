@@ -19,14 +19,6 @@ public class BlocklyBlock {
         this.statements = statements;
     }
 
-    protected Class<?> getBlock(){
-        return block;
-    }
-
-    protected String getName(){
-        return name;
-    }
-
     protected Map<String, Field> getFields(){
         return fields;
     }
