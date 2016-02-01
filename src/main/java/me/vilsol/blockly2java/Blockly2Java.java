@@ -67,7 +67,7 @@ public class Blockly2Java {
      * Parse blockly XML structure and convert into an object
      *
      * @param blockly Blockly XML structure
-     * @return The parent-most object of the structure
+     * @return List of parent-most blocks
      */
     public static ArrayList<Object> parseBlockly(String blockly){
         Matcher m = getInstance().nodePattern.matcher(blockly);
